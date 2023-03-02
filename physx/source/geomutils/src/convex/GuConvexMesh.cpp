@@ -302,7 +302,8 @@ bool ConvexMesh::load(PxInputStream& stream)
 		return false;
 
 	// Check if old (incompatible) mesh format is loaded
-	if (version < PX_CONVEX_VERSION)
+	static_assert(PX_CONVEX_VERSION == 14, "Update code below to read old convex mesh format properly.");
+	if (version < 13)
 		return PxGetFoundation().error(PxErrorCode::eINTERNAL_ERROR, PX_FL, "Loading convex mesh failed: Deprecated mesh cooking format.");
 
 	// Import serialization flags
@@ -343,7 +344,11 @@ bool ConvexMesh::load(PxInputStream& stream)
 	}
 
 	//Import Sdf data
-	PxF32 sdfFlag = readFloat(mismatch, stream);
+	PxF32 sdfFlag;
+	if (version < 13)
+		sdfFlag = -1.0f;
+	else
+		sdfFlag = readFloat(mismatch, stream);
 	if (sdfFlag != -1.0f)
 	{
 		PX_ASSERT(sdfFlag == 1.0f);	//otherwise file is corrupt

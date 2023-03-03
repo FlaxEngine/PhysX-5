@@ -1,8 +1,4 @@
 <project toolsVersion="6.4">
-	<dependency name="CMakeModules">
-		<package name="CMakeModules" version="1.28.trunk.32494385" /> <!-- default -->
-	</dependency>
-
 	<dependency name="clangMetadata" tags="requiredForDistro requiredForMetaGen">
 		<package name="clang-physxmetadata" version="4.0.0.32489833_1"/>
 	</dependency>

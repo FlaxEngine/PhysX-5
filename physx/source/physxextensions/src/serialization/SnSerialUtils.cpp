@@ -38,7 +38,7 @@ using namespace physx;
 namespace
 {
 
-#define SN_NUM_BINARY_PLATFORMS 9
+#define SN_NUM_BINARY_PLATFORMS 14
 const PxU32 sBinaryPlatformTags[SN_NUM_BINARY_PLATFORMS] =
 {
 	PX_MAKE_FOURCC('W','_','3','2'),
@@ -49,7 +49,12 @@ const PxU32 sBinaryPlatformTags[SN_NUM_BINARY_PLATFORMS] =
 	PX_MAKE_FOURCC('M','_','6','4'),
 	PX_MAKE_FOURCC('N','X','3','2'),
 	PX_MAKE_FOURCC('N','X','6','4'),
-	PX_MAKE_FOURCC('L','A','6','4')
+	PX_MAKE_FOURCC('L','A','6','4'),
+	PX_MAKE_FOURCC('A','N','D','R'),
+	PX_MAKE_FOURCC('A','A','6','4'),
+	PX_MAKE_FOURCC('M','A','6','4'),
+	PX_MAKE_FOURCC('P','S','_','5'),
+	PX_MAKE_FOURCC('P','S','_','4'),
 };
 
 const char* sBinaryPlatformNames[SN_NUM_BINARY_PLATFORMS] =
@@ -62,7 +67,12 @@ const char* sBinaryPlatformNames[SN_NUM_BINARY_PLATFORMS] =
 	"mac64",
 	"switch32",
 	"switch64",
-	"linuxaarch64"
+	"linuxaarch64",
+	"android",
+	"ios64",
+	"macarm64",
+	"ps5",
+	"ps4",
 };
 
 }
@@ -89,6 +99,16 @@ PxU32 getBinaryPlatformTag()
 	return sBinaryPlatformTags[7];
 #elif PX_LINUX && PX_A64
 	return sBinaryPlatformTags[8];
+#elif PX_ANDROID
+	return sBinaryPlatformTags[9];
+#elif PX_IOS && PX_A64
+	return sBinaryPlatformTags[10];
+#elif PX_OSX && PX_A64
+	return sBinaryPlatformTags[11];
+#elif PX_PS5
+	return sBinaryPlatformTags[12];
+#elif PX_PS4
+	return sBinaryPlatformTags[13];
 #else
 	#error Unknown binary platform
 #endif

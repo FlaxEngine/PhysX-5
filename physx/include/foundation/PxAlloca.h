@@ -62,11 +62,14 @@ class PxScopedPointer : private Alloc
 #if PX_WINDOWS_FAMILY
 #include <malloc.h>
 #define PxAlloca(x) _alloca(x)
-#elif PX_LINUX
+#elif PX_LINUX || PX_ANDROID
 #include <malloc.h>
 #define PxAlloca(x) alloca(x)
 #elif PX_APPLE_FAMILY
 #include <alloca.h>
+#define PxAlloca(x) alloca(x)
+#elif PX_PS4 || PX_PS5
+#include <memory.h>
 #define PxAlloca(x) alloca(x)
 #elif PX_SWITCH
 #include <malloc.h>

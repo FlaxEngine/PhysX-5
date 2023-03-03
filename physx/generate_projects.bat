@@ -7,6 +7,9 @@ set PHYSX_ROOT_DIR=%CD%
 popd
 SET PHYSX_ROOT_DIR=%PHYSX_ROOT_DIR:\=/%
 
+:: Use bundled CMakeModules with custom changes (instead of one from packman)
+SET PM_CMAKEMODULES_PATH=%PHYSX_ROOT_DIR%/../externals/CMakeModules
+
 call "%PHYSX_ROOT_DIR%\buildtools\packman\packman" init
 set "PYTHONPATH=%PM_MODULE_DIR%;%PYTHONPATH%"
 

@@ -36,7 +36,7 @@
 #pragma warning(disable : 4996) // unsafe string functions
 #endif
 
-#if PX_APPLE_FAMILY
+#if PX_PS4 || PX_PS5 || PX_APPLE_FAMILY
 #pragma clang diagnostic push
 // error : format string is not a string literal
 #pragma clang diagnostic ignored "-Wformat-nonliteral"
@@ -161,7 +161,7 @@ int32_t Pxstrnicmp(const char* str, const char* str1, size_t n)
 
 }//namespace physx
 
-#if PX_APPLE_FAMILY
+#if PX_PS4 || PX_PS5 || PX_APPLE_FAMILY
 #pragma clang diagnostic pop
 #endif
 

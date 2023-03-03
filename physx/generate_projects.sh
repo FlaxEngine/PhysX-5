@@ -2,6 +2,9 @@
 
 export PHYSX_ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# Use bundled CMakeModules with custom changes (instead of one from packman)
+export PM_CMakeModules_PATH="$PHYSX_ROOT_DIR/../externals/CMakeModules"
+
 PACKMAN_CMD="$PHYSX_ROOT_DIR/buildtools/packman/packman"
 if [ ! -f "$PACKMAN_CMD" ]; then
     PACKMAN_CMD="${PACKMAN_CMD}.sh"

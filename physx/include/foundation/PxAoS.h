@@ -33,7 +33,7 @@
 
 #if PX_WINDOWS && !PX_NEON
 #include "windows/PxWindowsAoS.h"
-#elif(PX_UNIX_FAMILY || PX_SWITCH)
+#elif(PX_UNIX_FAMILY || PX_PS4 || PX_PS5 || PX_SWITCH)
 #include "unix/PxUnixAoS.h"
 #else
 #error "Platform not supported!"

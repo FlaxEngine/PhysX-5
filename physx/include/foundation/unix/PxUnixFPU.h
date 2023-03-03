@@ -31,7 +31,7 @@
 
 #include "foundation/PxPreprocessor.h"
 
-#if PX_LINUX || PX_OSX
+#if PX_LINUX || PX_PS4 || PX_PS5 || PX_OSX
 
 #if PX_X86 || PX_X64
 #if PX_EMSCRIPTEN
@@ -78,6 +78,6 @@ PX_INLINE physx::PxSIMDGuard::~PxSIMDGuard()
 
 #else
 	#error No SIMD implementation for this unix platform.
-#endif // PX_LINUX || PX_OSX
+#endif
 
 #endif // #ifndef PXFOUNDATION_PXUNIXFPU_H

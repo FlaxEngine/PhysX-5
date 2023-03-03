@@ -38,7 +38,7 @@ PxDefaultCpuDispatcher* physx::PxDefaultCpuDispatcherCreate(PxU32 numThreads, Px
 	return PX_NEW(Ext::DefaultCpuDispatcher)(numThreads, affinityMasks, mode, yieldProcessorCount);
 }
 
-#if !PX_SWITCH
+#if !PX_PS4 && !PX_PS5 && !PX_SWITCH
 void Ext::DefaultCpuDispatcher::getAffinityMasks(PxU32* affinityMasks, PxU32 threadCount)
 {
 	for(PxU32 i=0; i < threadCount; i++)

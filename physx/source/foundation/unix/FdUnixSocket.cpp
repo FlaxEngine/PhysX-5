@@ -34,8 +34,13 @@
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <sys/time.h>
+#if PX_PS4
+#include <ps4/PsPS4Socket.h>
+#elif PX_PS5
+#else
 #include <netdb.h>
 #include <arpa/inet.h>
+#endif
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -121,6 +126,9 @@ bool SocketImpl::connect(const char* host, uint16_t port, uint32_t timeout)
 	socketAddress.sin_family = AF_INET;
 	socketAddress.sin_port = htons(port);
 
+#if PX_PS4 || PX_PS5
+	socketAddress.sin_addr.s_addr = resolveName(host, timeout);
+#else
 	// get host
 	hostent* hp = gethostbyname(host);
 	if(!hp)
@@ -132,6 +140,7 @@ bool SocketImpl::connect(const char* host, uint16_t port, uint32_t timeout)
 			return false;
 	}
 	intrinsics::memCopy(&socketAddress.sin_addr, hp->h_addr_list[0], hp->h_length);
+#endif
 
 	// connect
 	mSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -275,12 +284,16 @@ bool SocketImpl::nonBlockingTimeout() const
 
 void socketSetBlockingInternal(int32_t socket, bool blocking)
 {
+#if PX_PS4 || PX_PS5
+// not implemented
+#else
 	int mode = fcntl(socket, F_GETFL, 0);
 	if(!blocking)
 		mode |= O_NONBLOCK;
 	else
 		mode &= ~O_NONBLOCK;
 	fcntl(socket, F_SETFL, mode);
+#endif
 }
 
 // should be cross-platform from here down

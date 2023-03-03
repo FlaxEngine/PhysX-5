@@ -32,14 +32,15 @@
 #include "foundation/PxThread.h"
 
 #include <math.h>
-#if !PX_APPLE_FAMILY && !defined(__CYGWIN__) && !PX_EMSCRIPTEN
+#if !PX_APPLE_FAMILY && !PX_ANDROID && !defined(__CYGWIN__) && !PX_PS4 && !PX_PS5 && !PX_EMSCRIPTEN
 #include <bits/local_lim.h> // PTHREAD_STACK_MIN
 #endif
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
+#if !PX_PS4 && !PX_PS5
 #include <sys/syscall.h>
-#if !PX_APPLE_FAMILY && !PX_EMSCRIPTEN
+#elif !PX_APPLE_FAMILY && !PX_EMSCRIPTEN
 #include <asm/unistd.h>
 #include <sys/resource.h>
 #endif
@@ -51,10 +52,24 @@
 #include <pthread.h>
 #endif
 
+// fwd
+#if PX_ANDROID
+extern "C" {
+int android_getCpuCount(void);
+}
+#endif
+
 #define PxSpinLockPause() asm("nop")
 
 namespace physx
 {
+
+#if PX_PS4 || PX_PS5
+	// implemented in console package
+	uint64_t setAffinityMaskPS4(pthread_t, uint32_t);
+	int32_t setNamePS4(pthread_t, const char*);
+	int32_t pthreadCreatePS4(pthread_t *, const pthread_attr_t *, void *(*) (void *), void *, const char*);
+#endif
 
 namespace
 {
@@ -90,8 +105,9 @@ ThreadImpl* getThread(PxThreadImpl* impl)
 static void setTid(ThreadImpl& threadImpl)
 {
 // query TID
+#if PX_PS4 || PX_PS5
 // AM: TODO: neither of the below are implemented
-#if PX_APPLE_FAMILY
+#elif PX_APPLE_FAMILY
 	threadImpl.tid = syscall(SYS_gettid);
 #elif PX_EMSCRIPTEN
 	threadImpl.tid = pthread_self();
@@ -172,7 +188,7 @@ void PxThreadImpl::start(uint32_t stackSize, PxRunnable* runnable)
 	if(stackSize == 0)
 		stackSize = getDefaultStackSize();
 
-#if defined(PTHREAD_STACK_MIN)
+#if defined(PTHREAD_STACK_MIN) && !PX_ANDROID
 	if(stackSize < PTHREAD_STACK_MIN)
 	{
 		PxGetFoundation().error(PxErrorCode::eDEBUG_WARNING, __FILE__, __LINE__,
@@ -191,7 +207,11 @@ void PxThreadImpl::start(uint32_t stackSize, PxRunnable* runnable)
 
 	status = pthread_attr_setstacksize(&attr, stackSize);
 	PX_ASSERT(!status);
+#if PX_PS4 || PX_PS5
+	status = pthreadCreatePS4(&getThread(this)->thread, &attr, PxThreadStart, this, getThread(this)->name);
+#else
 	status = pthread_create(&getThread(this)->thread, &attr, PxThreadStart, this);
+#endif
 	PX_ASSERT(!status);
 
 	// wait for thread to startup and write out TID
@@ -208,8 +228,11 @@ void PxThreadImpl::start(uint32_t stackSize, PxRunnable* runnable)
 	if(getThread(this)->affinityMask)
 		setAffinityMask(getThread(this)->affinityMask);
 
+#if PX_PS4 || PX_PS5
+#else
 	if (getThread(this)->name)
 		setName(getThread(this)->name);
+#endif
 }
 
 void PxThreadImpl::signalQuit()
@@ -244,9 +267,14 @@ __attribute__((noreturn))
 
 void PxThreadImpl::kill()
 {
+#if !PX_ANDROID
 	if(getThread(this)->state == ePxThreadStarted)
 		pthread_cancel(getThread(this)->thread);
 	getThread(this)->state = ePxThreadStopped;
+#else
+	PxGetFoundation().error(PxErrorCode::eDEBUG_WARNING, __FILE__, __LINE__,
+	                              "ThreadImpl::kill() called, but is not implemented");
+#endif
 }
 
 void PxThreadImpl::sleep(uint32_t ms)
@@ -286,7 +314,9 @@ uint32_t PxThreadImpl::setAffinityMask(uint32_t mask)
 
 	if(getThread(this)->state == ePxThreadStarted)
 	{
-#if PX_EMSCRIPTEN
+#if PX_PS4 || PX_PS5
+		prevMask = setAffinityMaskPS4(getThread(this)->thread, mask);
+#elif PX_EMSCRIPTEN
 		// not supported
 #elif !PX_APPLE_FAMILY // Apple doesn't support syscall with getaffinity and setaffinity
 		int32_t errGet = syscall(__NR_sched_getaffinity, getThread(this)->tid, sizeof(prevMask), &prevMask);
@@ -308,6 +338,11 @@ void PxThreadImpl::setName(const char* name)
 
 	if (getThread(this)->state == ePxThreadStarted)
 	{
+#if PX_ANDROID && (__ANDROID_API__ > 8)
+		pthread_setname_np(getThread(this)->thread, name);
+#elif PX_PS4 || PX_PS5
+		setNamePS4(getThread(this)->thread, name);
+#else
 		// not implemented because most unix APIs expect setName()
 		// to be called from the thread's context. Example see next comment:
 
@@ -315,6 +350,7 @@ void PxThreadImpl::setName(const char* name)
 		// the main process if used in the wrong context:
 		// prctl(PR_SET_NAME, reinterpret_cast<unsigned long>(name) ,0,0,0);
 		PX_UNUSED(name);
+#endif
 	}
 }
 
@@ -389,6 +425,8 @@ uint32_t PxThreadImpl::getNbPhysicalCores()
 	int count;
 	size_t size = sizeof(count);
 	return sysctlbyname("hw.physicalcpu", &count, &size, NULL, 0) ? 0 : count;
+#elif PX_ANDROID
+	return android_getCpuCount();
 #else
 	// Linux exposes CPU topology using /sys/devices/system/cpu
 	// https://www.kernel.org/doc/Documentation/cputopology.txt
@@ -404,6 +442,10 @@ uint32_t PxThreadImpl::getNbPhysicalCores()
 			return minIndex + 1;
 	}
 
+#if PX_PS4
+	// Reducing to 6 to take into account that the OS appears to use 2 cores at peak currently.
+	return 6;
+#else
 	// For non-Linux kernels this fallback is possibly the best we can do
 	// but will report logical (hyper-threaded) counts
 	int n = sysconf(_SC_NPROCESSORS_CONF);
@@ -411,6 +453,7 @@ uint32_t PxThreadImpl::getNbPhysicalCores()
 		return 0;
 	else
 		return n;
+#endif
 #endif
 }
 

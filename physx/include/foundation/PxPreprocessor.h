@@ -95,10 +95,24 @@ Operating system defines, see http://sourceforge.net/p/predef/wiki/OperatingSyst
 	#define PX_WIN64 1
 #elif defined(_WIN32) // note: _M_PPC implies _WIN32
 	#define PX_WIN32 1
-#elif defined(__linux__) || defined (__EMSCRIPTEN__)
+#elif defined(__ANDROID__)
+	#define PX_ANDROID 1
+#elif defined(__linux__) || defined (__EMSCRIPTEN__) // note: __ANDROID__ implies __linux__
 	#define PX_LINUX 1
 #elif defined(__APPLE__)
 	#define PX_OSX 1
+	#include <TargetConditionals.h>
+	#if TARGET_OS_IPHONE
+		#define PX_IOS 1
+	#elif TARGET_OS_OSX
+		#define PX_OSX 1
+	#else
+		#error "Unknown Apple target OS"
+	#endif
+#elif defined(__PROSPERO__)
+	#define PX_PS5 1
+#elif defined(__ORBIS__)
+	#define PX_PS4 1
 #elif defined(__NX__)
 	#define PX_SWITCH 1
 #else
@@ -155,11 +169,23 @@ define anything not defined on this platform to 0
 #ifndef PX_WIN32
 	#define PX_WIN32 0
 #endif
+#ifndef PX_ANDROID
+	#define PX_ANDROID 0
+#endif
 #ifndef PX_LINUX
 	#define PX_LINUX 0
 #endif
+#ifndef PX_IOS
+	#define PX_IOS 0
+#endif
 #ifndef PX_OSX
 	#define PX_OSX 0
+#endif
+#ifndef PX_PS4
+	#define PX_PS4 0
+#endif
+#ifndef PX_PS5
+	#define PX_PS5 0
 #endif
 #ifndef PX_SWITCH
 	#define PX_SWITCH 0
@@ -218,8 +244,8 @@ family shortcuts
 #define PX_GCC_FAMILY (PX_CLANG || PX_GCC)
 // os
 #define PX_WINDOWS_FAMILY (PX_WIN32 || PX_WIN64)
-#define PX_LINUX_FAMILY PX_LINUX
-#define PX_APPLE_FAMILY PX_OSX                              // equivalent to #if __APPLE__
+#define PX_LINUX_FAMILY (PX_LINUX || PX_ANDROID)
+#define PX_APPLE_FAMILY (PX_IOS || PX_OSX)                  // equivalent to #if __APPLE__
 #define PX_UNIX_FAMILY (PX_LINUX_FAMILY || PX_APPLE_FAMILY) // shortcut for unix/posix platforms
 #if defined(__EMSCRIPTEN__)
 	#define PX_EMSCRIPTEN 1
@@ -234,7 +260,7 @@ family shortcuts
 /**
 C++ standard library defines
 */
-#if defined(_LIBCPP_VERSION) || PX_WIN64 || PX_WIN32 || PX_EMSCRIPTEN
+#if defined(_LIBCPP_VERSION) || PX_WIN64 || PX_WIN32 || PX_PS4 || PX_PS5 || PX_EMSCRIPTEN
 	#define PX_LIBCPP 1
 #else
 	#define PX_LIBCPP 0
@@ -271,7 +297,7 @@ DLL export macros
 	#define PX_UNIX_EXPORT
 #endif
 
-#if PX_WINDOWS_FAMILY
+#if (PX_WINDOWS_FAMILY || PX_PS4 || PX_PS5)
 	#define PX_DLL_EXPORT __declspec(dllexport)
 	#define PX_DLL_IMPORT __declspec(dllimport)
 #else
@@ -412,7 +438,7 @@ General defines
 */
 
 // static assert
-#if(defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7))) || (PX_APPLE_FAMILY) || (PX_SWITCH) || (PX_CLANG && PX_ARM) || (PX_CLANG && PX_A64)
+#if(defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7))) || (PX_APPLE_FAMILY) || (PX_SWITCH || PX_PS4 || PX_PS5) || (PX_CLANG && PX_ARM) || (PX_CLANG && PX_A64)
 	#define PX_COMPILE_TIME_ASSERT(exp) typedef char PX_CONCAT(PxCompileTimeAssert_Dummy, __COUNTER__)[(exp) ? 1 : -1] __attribute__((unused))
 #else
 	#define PX_COMPILE_TIME_ASSERT(exp) typedef char PxCompileTimeAssert_Dummy[(exp) ? 1 : -1]
@@ -455,13 +481,13 @@ PX_CUDA_CALLABLE PX_INLINE void PX_UNUSED(T const&)
 // This assert works on win32/win64, but may need further specialization on other platforms.
 // Some GCC compilers need the compiler flag -malign-double to be set.
 // Apparently the apple-clang-llvm compiler doesn't support malign-double.
-#if PX_APPLE_FAMILY || (PX_CLANG && !PX_ARM)
+#if PX_PS4 || PX_PS5 || (PX_CLANG && !PX_ARM)
 	struct PxPackValidation
 	{
 		char _;
 		long a;
 	};
-#elif PX_CLANG && PX_ARM
+#elif PX_ANDROID || (PX_CLANG && PX_ARM)
 	struct PxPackValidation
 	{
 		char _;
@@ -512,7 +538,7 @@ protected:                  \
 #endif
 
 #ifndef PX_SUPPORT_EXTERN_TEMPLATE
-	#define PX_SUPPORT_EXTERN_TEMPLATE (PX_VC != 11)
+	#define PX_SUPPORT_EXTERN_TEMPLATE ((!PX_ANDROID) && (PX_VC != 11))
 #else
 	#define PX_SUPPORT_EXTERN_TEMPLATE 0
 #endif

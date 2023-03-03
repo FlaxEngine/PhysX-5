@@ -101,7 +101,7 @@ namespace physx { namespace profile {
 		};
 	};
 
-#if PX_APPLE_FAMILY
+#if PX_APPLE_FAMILY || PX_PS4 || PX_PS5
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wimplicit-fallthrough"
 #endif
@@ -160,7 +160,7 @@ namespace physx { namespace profile {
 		return EventStreamCompressionFlags::U32;
 	}
 
-#if PX_APPLE_FAMILY
+#if PX_APPLE_FAMILY || PX_PS4 || PX_PS5
 #pragma clang diagnostic pop
 #endif
 

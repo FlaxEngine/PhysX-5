@@ -345,7 +345,7 @@ bool ConvexMesh::load(PxInputStream& stream)
 
 	//Import Sdf data
 	PxF32 sdfFlag;
-	if (version < 13)
+	if (version < 14)
 		sdfFlag = -1.0f;
 	else
 		sdfFlag = readFloat(mismatch, stream);

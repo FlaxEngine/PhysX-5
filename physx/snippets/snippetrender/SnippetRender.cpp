@@ -31,14 +31,14 @@
 #define USE_CUDA_INTEROP (!PX_PUBLIC_RELEASE)
 
 #if (PX_SUPPORT_GPU_PHYSX && USE_CUDA_INTEROP)
-#if PX_LINUX && PX_CLANG
+#if PX_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 #endif
 #include "cuda.h"
 #include "SnippetRender.h"
 #include "cudaGL.h"
-#if PX_LINUX && PX_CLANG
+#if PX_CLANG
 #pragma clang diagnostic pop
 #endif
 #else

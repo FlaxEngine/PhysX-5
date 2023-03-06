@@ -38,11 +38,13 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
-#if !PX_PS4 && !PX_PS5
+#if PX_PS4 || PX_PS5
+#else
 #include <sys/syscall.h>
-#elif !PX_APPLE_FAMILY && !PX_EMSCRIPTEN
+#if !PX_APPLE_FAMILY && !PX_EMSCRIPTEN
 #include <asm/unistd.h>
 #include <sys/resource.h>
+#endif
 #endif
 
 #if PX_APPLE_FAMILY
@@ -442,7 +444,7 @@ uint32_t PxThreadImpl::getNbPhysicalCores()
 			return minIndex + 1;
 	}
 
-#if PX_PS4
+#if PX_PS4 || PX_PS5
 	// Reducing to 6 to take into account that the OS appears to use 2 cores at peak currently.
 	return 6;
 #else

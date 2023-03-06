@@ -182,6 +182,7 @@ class CMakePreset:
                 os.environ['PM_CMakeModules_PATH'] + '/ps4/PS4Toolchain.txt'
             outString = outString + ' -DCMAKE_GENERATOR_PLATFORM=ORBIS'
             outString = outString + ' -DSUPPRESS_SUFFIX=ON'
+            outString = outString + ' -G \"Visual Studio 15 2017\"'
             return outString
         elif self.targetPlatform == 'ps5':
             outString = outString + ' -DTARGET_BUILD_PLATFORM=ps5'
@@ -189,6 +190,7 @@ class CMakePreset:
                 os.environ['PM_CMakeModules_PATH'] + '/ps5/PS5Toolchain.txt'
             outString = outString + ' -DCMAKE_GENERATOR_PLATFORM=PROSPERO'
             outString = outString + ' -DSUPPRESS_SUFFIX=ON'
+            outString = outString + ' -G \"Visual Studio 16 2019\"'
             return outString
         elif self.targetPlatform == 'switch64':
             outString = outString + ' -DTARGET_BUILD_PLATFORM=switch'
@@ -197,6 +199,7 @@ class CMakePreset:
                 '/switch/NX64Toolchain.txt'
             outString = outString + ' -DCMAKE_GENERATOR_PLATFORM=NX64'
             outString = outString + ' -DSUPPRESS_SUFFIX=ON'
+            outString = outString + ' -G \"Visual Studio 16 2019\"'
             return outString
         elif self.targetPlatform == 'android':
             outString = outString + ' -DTARGET_BUILD_PLATFORM=android'
@@ -289,34 +292,34 @@ def presetProvided(pName):
 
     print('PM_CMakeModules_PATH: ' + os.environ['PM_CMakeModules_PATH'])
     print('PM_PATHS: ' + os.environ['PM_PATHS'])
-
-    if os.environ.get('PM_cmake_PATH') is not None:
-        cmakeExec = os.environ['PM_cmake_PATH'] + '/bin/cmake' + cmakeExt()
-    else:
-        cmakeExec = 'cmake' + cmakeExt()
-    print('Cmake: ' + cmakeExec)
+    print('PATH: ' + os.environ['PATH'])
 
     # gather cmake parameters
     cmakeParams = parsedPreset.getPlatformCMakeParams()
     cmakeParams = cmakeParams + ' ' + getCommonParams()
     cmakeParams = cmakeParams + ' ' + parsedPreset.getCMakeSwitches()
     cmakeParams = cmakeParams + ' ' + parsedPreset.getCMakeParams()
-    # print(cmakeParams)
-
     if os.path.isfile(os.environ['PHYSX_ROOT_DIR'] + '/compiler/internal/CMakeLists.txt'):
         cmakeMasterDir = 'internal'
     else:
         cmakeMasterDir = 'public'
+    if os.environ.get('PM_cmake_PATH') is not None:
+        cmakeExec = os.environ['PM_cmake_PATH'] + '/bin/cmake' + cmakeExt()
+    else:
+        cmakeExec = 'cmake' + cmakeExt()
+
+    print('Cmake app: ' + cmakeExec)
+    print('Cmake params: ' + cmakeParams)
+    print('Cmake folder: ' + os.environ['PHYSX_ROOT_DIR'] + '/compiler/' + cmakeMasterDir)
+
     if parsedPreset.isMultiConfigPlatform():
         # cleanup and create output directory
         outputDir = os.path.join('compiler', parsedPreset.presetName)
         cleanupCompilerDir(outputDir)
 
         # run the cmake script
-        #print('Cmake params:' + cmakeParams)
         os.chdir(os.path.join(os.environ['PHYSX_ROOT_DIR'], outputDir))
-        os.system(cmakeExec + ' \"' +
-                  os.environ['PHYSX_ROOT_DIR'] + '/compiler/' + cmakeMasterDir + '\"' + cmakeParams)
+        os.system(cmakeExec + ' \"' + os.environ['PHYSX_ROOT_DIR'] + '/compiler/' + cmakeMasterDir + '\"' + cmakeParams)
         os.chdir(os.environ['PHYSX_ROOT_DIR'])
     else:
         configs = ['debug', 'checked', 'profile', 'release']
@@ -326,11 +329,8 @@ def presetProvided(pName):
             cleanupCompilerDir(outputDir)
 
             # run the cmake script
-            #print('Cmake params:' + cmakeParams)
             os.chdir(os.path.join(os.environ['PHYSX_ROOT_DIR'], outputDir))
-            # print(cmakeExec + ' \"' + os.environ['PHYSX_ROOT_DIR'] + '/compiler/' + cmakeMasterDir + '\"' + cmakeParams + ' -DCMAKE_BUILD_TYPE=' + config)
-            os.system(cmakeExec + ' \"' + os.environ['PHYSX_ROOT_DIR'] + '/compiler/' +
-                      cmakeMasterDir + '\"' + cmakeParams + ' -DCMAKE_BUILD_TYPE=' + config)
+            os.system(cmakeExec + ' \"' + os.environ['PHYSX_ROOT_DIR'] + '/compiler/' + cmakeMasterDir + '\"' + cmakeParams + ' -DCMAKE_BUILD_TYPE=' + config)
             os.chdir(os.environ['PHYSX_ROOT_DIR'])
     pass
 

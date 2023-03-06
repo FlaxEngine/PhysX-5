@@ -33,12 +33,12 @@
 // The source code for the generate was at one time checked into:
 // physx/PhysXMetaDataGenerator/llvm/tools/clang/lib/Frontend/PhysXMetaDataAction.cpp
 #include "foundation/PxPreprocessor.h"
-#if PX_LINUX && PX_CLANG
+#if PX_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 #endif
 #include "PxVehicleMetaDataObjects.h"
-#if PX_LINUX && PX_CLANG
+#if PX_CLANG
 #pragma clang diagnostic pop
 #endif
 

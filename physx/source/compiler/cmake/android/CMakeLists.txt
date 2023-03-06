@@ -46,8 +46,8 @@ ENDIF()
 # Build debug info for all configurations
 SET(PHYSX_CXX_FLAGS_DEBUG "-O0 -g" CACHE INTERNAL "PhysX Debug CXX Flags")
 SET(PHYSX_CXX_FLAGS_CHECKED "-O3 -g" CACHE INTERNAL "PhysX Checked CXX Flags")
-SET(PHYSX_CXX_FLAGS_PROFILE "-O3 -g" CACHE INTERNAL "PhysX Profile CXX Flags")
-SET(PHYSX_CXX_FLAGS_RELEASE "-O3 -g" CACHE INTERNAL "PhysX Release CXX Flags")
+SET(PHYSX_CXX_FLAGS_PROFILE "-O3" CACHE INTERNAL "PhysX Profile CXX Flags")
+SET(PHYSX_CXX_FLAGS_RELEASE "-O3" CACHE INTERNAL "PhysX Release CXX Flags")
 
 
 # These flags are local to the directory the CMakeLists.txt is in

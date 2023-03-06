@@ -95,9 +95,7 @@ uint64_t PxTime::getCurrentCounterValue()
 {
 	return mach_absolute_time();
 }
-
 #else
-
 PxCounterFrequencyToTensOfNanos PxTime::getCounterFrequency()
 {
 	return PxCounterFrequencyToTensOfNanos(1, 10);

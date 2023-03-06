@@ -38,12 +38,12 @@
 #include "PvdTypeNames.h"
 #include "PxPvdObjectModelBaseTypes.h"
 
-#if PX_LINUX && PX_CLANG
+#if PX_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 #endif
 #include "PxExtensionMetaDataObjects.h"
-#if PX_LINUX && PX_CLANG
+#if PX_CLANG
 #pragma clang diagnostic pop
 #endif
 

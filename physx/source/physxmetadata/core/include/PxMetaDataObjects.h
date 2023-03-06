@@ -95,7 +95,7 @@
 #include "PxVisualizationParameter.h"
 #include "PxPruningStructure.h"
 
-#if PX_LINUX && PX_CLANG
+#if PX_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 #endif
@@ -675,7 +675,7 @@ inline void visitInstanceProperties( TOperator inOperator )
 
 }
 
-#if PX_LINUX && PX_CLANG
+#if PX_CLANG
 #pragma clang diagnostic pop
 #endif
 

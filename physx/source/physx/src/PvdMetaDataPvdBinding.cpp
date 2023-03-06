@@ -68,7 +68,7 @@ struct NameValuePair
 	PxU32 mValue;
 };
 
-#if PX_LINUX && PX_CLANG
+#if PX_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 #endif
@@ -88,7 +88,7 @@ static const NameValuePair g_physx_Sq_SceneQueryID__EnumConversion[] = {
 	{ NULL, 0 }
 };
 
-#if PX_LINUX && PX_CLANG
+#if PX_CLANG
 #pragma clang diagnostic pop
 #endif
 

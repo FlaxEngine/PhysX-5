@@ -32,12 +32,13 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/poll.h>
 #include <sys/time.h>
 #if PX_PS4
-#include <ps4/PsPS4Socket.h>
+#include <ps4/NsPS4Socket.h>
 #elif PX_PS5
+#include <ps5/NsPS5Socket.h>
 #else
+#include <sys/poll.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 #endif
@@ -158,6 +159,9 @@ bool SocketImpl::connect(const char* host, uint16_t port, uint32_t timeout)
 			return false;
 		}
 
+#if PX_PS4 || PX_PS5
+		// not supported
+#else
 		// Setup poll function call to monitor the connect call.
 		// By querying for POLLOUT we're checking if the socket is
 		// ready for writing.
@@ -185,6 +189,7 @@ bool SocketImpl::connect(const char* host, uint16_t port, uint32_t timeout)
 				return false;
 			}
 		}
+#endif
 
 		// check if we are really connected, above code seems to return
 		// true if host is a unix machine even if the connection was
@@ -286,6 +291,8 @@ void socketSetBlockingInternal(int32_t socket, bool blocking)
 {
 #if PX_PS4 || PX_PS5
 // not implemented
+	PX_UNUSED(socket);
+	PX_UNUSED(blocking);
 #else
 	int mode = fcntl(socket, F_GETFL, 0);
 	if(!blocking)

@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <preset name="mac-arm64" comment="macOS arm64 Xcode PhysX general settings">
-  <platform targetPlatform="mac64" compiler="xcode" />
+  <platform targetPlatform="mac-arm64" compiler="xcode" />
   <CMakeSwitches>
     <cmakeSwitch name="PX_BUILDSNIPPETS" value="True" comment="Generate the snippets" />
     <cmakeSwitch name="PX_GENERATE_STATIC_LIBRARIES" value="True" comment="Generate static libraries" />

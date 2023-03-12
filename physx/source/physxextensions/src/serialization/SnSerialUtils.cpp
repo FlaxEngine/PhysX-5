@@ -70,7 +70,7 @@ const char* sBinaryPlatformNames[SN_NUM_BINARY_PLATFORMS] =
 	"linuxaarch64",
 	"android",
 	"ios64",
-	"macarm64",
+	"mac-arm64",
 	"ps5",
 	"ps4",
 };

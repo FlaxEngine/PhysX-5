@@ -128,7 +128,7 @@ namespace Gu
 		virtual			aos::Vec3V	getCenter()										const	{ return mAToB.transform(getConvex<Convex>().getCenter());							}
 		//~GjkConvex
 
-		PX_FORCE_INLINE const aos::PxMatTransformV&	getRelativeTransform()			const	{ return (aos::PxMatTransformV&)mAToB;	}
+		PX_FORCE_INLINE const aos::PxMatTransformV&	getRelativeTransform()			const	{ return (const aos::PxMatTransformV&)mAToB;	}
 
 		//ML: we can't force inline function, otherwise win modern will throw compiler error
 		PX_INLINE RelativeConvex<typename ConvexGeom<Convex>::Type > getGjkConvex() const

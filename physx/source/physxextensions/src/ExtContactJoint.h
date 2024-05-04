@@ -41,6 +41,11 @@ namespace physx
 struct PxContactJointGeneratedValues;
 namespace Ext
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 	struct ContactJointData : public JointData
 	{
 		PxVec3	contact;
@@ -49,6 +54,10 @@ namespace Ext
 		PxReal  restitution;
 		PxReal	bounceThreshold;
 	};
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 	typedef JointT<PxContactJoint, ContactJointData, PxContactJointGeneratedValues> ContactJointT;
 	class ContactJoint : public ContactJointT

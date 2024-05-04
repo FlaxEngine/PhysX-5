@@ -281,6 +281,11 @@ PxIntBool Sweep_OBB_BV4(const Box& localBox, const PxVec3& localDir, float maxDi
 
 namespace
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 	struct BoxSweepParamsCB : BoxSweepParams
 	{
 		// PT: these new members are only here to call computeImpactData during traversal :( 
@@ -295,6 +300,10 @@ namespace
 		float					mMaxDist;
 		bool					mNodeSorting;
 	};
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 class LeafFunction_BoxSweepCB
 {

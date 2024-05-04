@@ -41,6 +41,11 @@ struct PxRevoluteJointGeneratedValues;
 
 namespace Ext
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 	struct RevoluteJointData : public JointData
 	{
 	//= ATTENTION! =====================================================================================
@@ -63,6 +68,10 @@ namespace Ext
 	private:
 		RevoluteJointData(const PxJointAngularLimitPair& pair) : limit(pair)	{}
 	};
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
     typedef JointT<PxRevoluteJoint, RevoluteJointData, PxRevoluteJointGeneratedValues> RevoluteJointT;
     

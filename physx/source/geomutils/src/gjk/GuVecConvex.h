@@ -34,6 +34,11 @@
 #define PX_SUPPORT_INLINE PX_FORCE_INLINE
 #define PX_SUPPORT_FORCE_INLINE PX_FORCE_INLINE
 
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 namespace physx
 {
 namespace Gu
@@ -175,5 +180,9 @@ namespace Gu
 }
 
 }
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 #endif

@@ -38,6 +38,11 @@ namespace physx
 struct PxRackAndPinionJointGeneratedValues;
 namespace Ext
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 	struct RackAndPinionJointData : public JointData
 	{
 		const PxBase*	hingeJoint;
@@ -46,6 +51,10 @@ namespace Ext
 		float			px;
 		float			vangle;
 	};
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 	typedef JointT<PxRackAndPinionJoint, RackAndPinionJointData, PxRackAndPinionJointGeneratedValues> RackAndPinionJointT;
 

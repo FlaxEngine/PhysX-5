@@ -38,6 +38,11 @@
 #include "PxvConfig.h"
 #include "DyFrictionPatch.h"
 
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 namespace physx
 {
 
@@ -100,5 +105,9 @@ void growPatches(CorrelationBuffer& fb,
 }
 
 }
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 #endif

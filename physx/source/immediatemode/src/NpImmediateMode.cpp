@@ -95,6 +95,11 @@ namespace
 		}
 	};
 
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 	// PT: this class makes it possible to call the FeatherstoneArticulation protected functions from here.
 	class immArticulation : public FeatherstoneArticulation
 	{
@@ -160,6 +165,10 @@ namespace
 		private:
 						void							initJointCore(Dy::ArticulationJointCore& core, const PxArticulationJointDataRC& inboundJoint);
 	};
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 #define MAX_NUM_PARTITIONS 32u
 

@@ -42,6 +42,11 @@
 
 #define EPA_DEBUG	0
 
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 namespace physx
 {
 #define MaxEdges 32
@@ -300,5 +305,9 @@ namespace Gu
 }
 
 }
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 #endif

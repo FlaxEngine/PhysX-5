@@ -36,6 +36,11 @@
 
 #define PCM_LOW_LEVEL_DEBUG 0
 
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 namespace physx
 {
 
@@ -878,5 +883,9 @@ void addManifoldPoint(PersistentContact* manifoldContacts, PersistentContactMani
 
 }//Gu
 }//physx
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 #endif

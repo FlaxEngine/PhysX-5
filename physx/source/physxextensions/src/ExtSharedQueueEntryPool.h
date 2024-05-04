@@ -37,6 +37,10 @@ namespace physx
 {
 namespace Ext
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable:4324)	// Padding was added at the end of a structure because of a __declspec(align) value.
+#endif							// Because of the SList member I assume*/
 	class SharedQueueEntry : public PxSListEntry
 	{
 	public:
@@ -47,11 +51,6 @@ namespace Ext
 		void* mObjectRef;
 		bool mPooledEntry; // True if the entry was preallocated in a pool
 	};
-
-#if PX_VC
-#pragma warning(push)
-#pragma warning(disable:4324)	// Padding was added at the end of a structure because of a __declspec(align) value.
-#endif							// Because of the SList member I assume*/
 
 	template<class Alloc = typename PxAllocatorTraits<SharedQueueEntry>::Type >
 	class SharedQueueEntryPool : private Alloc

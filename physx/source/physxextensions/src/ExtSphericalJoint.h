@@ -39,6 +39,10 @@ namespace physx
 struct PxSphericalJointGeneratedValues;
 namespace Ext
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
 	struct SphericalJointData: public JointData
 	{
 	//= ATTENTION! =====================================================================================
@@ -55,6 +59,9 @@ namespace Ext
 	private:
 		SphericalJointData(const PxJointLimitCone& cone) : limit(cone)	{}
 	};
+#if PX_VC
+#pragma warning(pop)
+#endif
     
     typedef JointT<PxSphericalJoint, SphericalJointData, PxSphericalJointGeneratedValues> SphericalJointT;
    

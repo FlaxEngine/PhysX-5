@@ -243,6 +243,11 @@ PxIntBool BV4_SphereSweepSingle(const Sphere& sphere, const PxVec3& dir, float m
 
 namespace
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 	struct SphereSweepParamsCB : SphereSweepParams
 	{
 		// PT: these new members are only here to call computeImpactDataT during traversal :( 
@@ -256,6 +261,10 @@ namespace
 		void*					mUserData;
 		bool					mNodeSorting;
 	};
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 class LeafFunction_SphereSweepCB
 {

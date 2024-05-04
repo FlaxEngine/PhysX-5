@@ -67,6 +67,11 @@ static PX_SUPPORT_INLINE PxReal FloatV_To_PxReal(const FloatV& a)
 	return f;
 }
 
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 struct CustomConvexV : ConvexV
 {
 	const PxGjkQuery::Support* s;
@@ -102,6 +107,10 @@ struct CustomConvexV : ConvexV
 		return supportRelative(dir, aTob, aTobT);
 	}
 };
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 bool PxGjkQuery::proximityInfo(const Support& a, const Support& b, const PxTransform& poseA, const PxTransform& poseB, PxReal contactDistance, PxReal toleranceLength, PxVec3& pointA, PxVec3& pointB, PxVec3& separatingAxis, PxReal& separation)
 {
@@ -159,6 +168,11 @@ bool PxGjkQuery::proximityInfo(const Support& a, const Support& b, const PxTrans
 	return false;
 }
 
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 struct PointConvexV : ConvexV
 {
 	Vec3V zero;
@@ -193,6 +207,10 @@ struct PointConvexV : ConvexV
 		return supportRelative(dir, aTob, aTobT);
 	}
 };
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 bool PxGjkQuery::raycast(const Support& shape, const PxTransform& pose, const PxVec3& rayStart, const PxVec3& unitDir, PxReal maxDist, PxReal& t, PxVec3& n, PxVec3& p)
 {

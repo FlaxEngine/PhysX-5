@@ -35,6 +35,8 @@
 #include "cudamanager/PxCudaContextManager.h"
 #include "cudamanager/PxCudaContext.h"
 
+#if PX_SUPPORT_GPU_PHYSX
+
 namespace physx
 {
 namespace ExtGpu
@@ -767,3 +769,5 @@ PxParticleRigidBufferHelper* PxCreateParticleRigidBufferHelper(const PxU32 maxRi
 
 } //namespace ExtGpu
 } //namespace physx
+
+#endif // PX_SUPPORT_GPU_PHYSX

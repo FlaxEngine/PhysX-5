@@ -39,6 +39,11 @@ using namespace physx::aos;
 
 // Box overlap any
 
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 struct OBBParams : OBBTestParams
 {
 	const IndTri32*	PX_RESTRICT	mTris32;
@@ -58,6 +63,10 @@ struct OBBTetParams : OBBTestParams
 	PxMat33					mRModelToBox_Padded;	//!< Rotation from model space to obb space
 	PxVec3p					mTModelToBox_Padded;	//!< Translation from model space to obb space
 };
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 // PT: TODO: this used to be inlined so we lost some perf by moving to PhysX's version. Revisit. (TA34704)
 PxIntBool intersectTriangleBoxBV4(const PxVec3& p0, const PxVec3& p1, const PxVec3& p2,

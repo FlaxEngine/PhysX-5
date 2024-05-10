@@ -96,6 +96,11 @@ PxIntBool BV4_CapsuleSweepSingle(const Capsule& capsule, const PxVec3& dir, floa
 
 namespace
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 	struct CapsuleSweepParamsCB : CapsuleSweepParams
 	{
 		// PT: these new members are only here to call computeImpactDataT during traversal :( 
@@ -110,6 +115,10 @@ namespace
 		void*					mUserData;
 		bool					mNodeSorting;
 	};
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 class LeafFunction_CapsuleSweepCB
 {

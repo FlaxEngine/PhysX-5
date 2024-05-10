@@ -484,6 +484,11 @@ static bool doLeafVsLeaf(PxReportCallback<PxGeomIndexPair>& callback, const PxU3
 
 namespace
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 struct MeshMeshParams : OBBTestParams
 {
 	PX_FORCE_INLINE	MeshMeshParams(PxReportCallback<PxGeomIndexPair>& callback, const SourceMesh* mesh0, const SourceMesh* mesh1, const PxMat44* mat0to1, const BV4Tree& tree, bool mustFlip, bool ignoreCoplanar) :
@@ -537,6 +542,10 @@ struct MeshMeshParams : OBBTestParams
 
 	PX_NOCOPY(MeshMeshParams)
 };
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 class LeafFunction_MeshMesh
 {

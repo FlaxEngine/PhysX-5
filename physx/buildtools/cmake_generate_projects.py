@@ -176,6 +176,11 @@ class CMakePreset:
             outString = outString + ' -DTARGET_BUILD_PLATFORM=windows'
             outString = outString + ' -DPX_OUTPUT_ARCH=x86'
             return outString
+        elif self.targetPlatform == 'win-arm64':
+            outString = outString + ' -AARM64'
+            outString = outString + ' -DTARGET_BUILD_PLATFORM=windows'
+            outString = outString + ' -DPX_OUTPUT_ARCH=arm'
+            return outString
         elif self.targetPlatform == 'ps4':
             outString = outString + ' -DTARGET_BUILD_PLATFORM=ps4'
             outString = outString + ' -DCMAKE_TOOLCHAIN_FILE=' + \

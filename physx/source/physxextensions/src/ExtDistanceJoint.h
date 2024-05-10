@@ -41,6 +41,10 @@ namespace physx
 struct PxDistanceJointGeneratedValues;
 namespace Ext
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
 	struct DistanceJointData : public JointData
 	{
 	//= ATTENTION! =====================================================================================
@@ -59,6 +63,9 @@ namespace Ext
 
 		PxDistanceJointFlags	jointFlags;
 	};
+#if PX_VC
+#pragma warning(pop)
+#endif
 
     typedef JointT<PxDistanceJoint, DistanceJointData, PxDistanceJointGeneratedValues> DistanceJointT;
 	class DistanceJoint : public DistanceJointT

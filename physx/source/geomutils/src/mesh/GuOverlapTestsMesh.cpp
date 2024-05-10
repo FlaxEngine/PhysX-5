@@ -98,6 +98,11 @@ bool GeomOverlapCallback_BoxMesh(GU_OVERLAP_FUNC_PARAMS)
 
 namespace
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 struct ConvexVsMeshOverlapCallback : MeshHitCallback<PxGeomRaycastHit>
 {
 	PxMatTransformV MeshToBoxV;
@@ -194,6 +199,10 @@ struct ConvexVsMeshOverlapCallback : MeshHitCallback<PxGeomRaycastHit>
 private:
 	ConvexVsMeshOverlapCallback& operator=(const ConvexVsMeshOverlapCallback&);
 };
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 }
 
 // PT: TODO: refactor bits of this with convex-vs-mesh code

@@ -33,6 +33,11 @@
 #include "PxSimulationEventCallback.h"
 #include "DyConstraint.h"
 
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 namespace physx
 {
 namespace Sc
@@ -121,5 +126,9 @@ namespace Sc
 } // namespace Sc
 
 }
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 #endif

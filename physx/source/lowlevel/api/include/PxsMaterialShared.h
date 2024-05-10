@@ -37,6 +37,11 @@ namespace physx
 
 	class PxOutputStream;
 
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 	template<class MaterialDataT, class PxMaterialT>
 	class MaterialCoreT : public MaterialDataT
 	{
@@ -52,6 +57,10 @@ namespace physx
 
 		static			void		getBinaryMetaData(PxOutputStream& stream);
 	};
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 } //namespace phyxs
 

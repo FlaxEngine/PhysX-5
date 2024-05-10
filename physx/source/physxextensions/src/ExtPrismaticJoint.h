@@ -40,6 +40,11 @@ namespace physx
 struct PxPrismaticJointGeneratedValues;
 namespace Ext
 {
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 	struct PrismaticJointData : public JointData
 	{
 	//= ATTENTION! =====================================================================================
@@ -58,6 +63,10 @@ namespace Ext
 	private:
 		PrismaticJointData(const PxJointLinearLimitPair& pair) : limit(pair)	{}
 	};
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
     typedef JointT<PxPrismaticJoint, PrismaticJointData, PxPrismaticJointGeneratedValues> PrismaticJointT;
    

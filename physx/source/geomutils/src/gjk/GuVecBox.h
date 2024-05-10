@@ -39,6 +39,11 @@
 #include "GuVecConvex.h"
 #include "GuConvexSupportTable.h"
 
+#if PX_VC
+#pragma warning(push)
+#pragma warning(disable : 4324) // structure was padded due to alignment specifier
+#endif
+
 namespace physx
 {
 PX_PHYSX_COMMON_API extern const aos::BoolV boxVertexTable[8];
@@ -220,6 +225,10 @@ namespace Gu
 }	//PX_COMPILE_TIME_ASSERT(sizeof(Gu::BoxV) == 96);
 
 }
+
+#if PX_VC
+#pragma warning(pop)
+#endif
 
 /** @} */
 #endif

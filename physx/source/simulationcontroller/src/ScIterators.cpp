@@ -22,7 +22,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2023 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -36,11 +36,12 @@ using namespace physx;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Sc::ContactIterator::Pair::Pair(const void*& contactPatches, const void*& contactPoints, PxU32 /*contactDataSize*/, const PxReal*& forces, PxU32 numContacts, PxU32 numPatches,
+Sc::ContactIterator::Pair::Pair(const void*& contactPatches, const void*& contactPoints, const void*& frictionPatches, PxU32 /*contactDataSize*/, const PxReal*& forces, PxU32 numContacts, PxU32 numPatches,
 	ShapeSimBase& shape0, ShapeSimBase& shape1, ActorSim* actor0, ActorSim* actor1)
 : mIndex(0)
 , mNumContacts(numContacts)
 , mIter(reinterpret_cast<const PxU8*>(contactPatches), reinterpret_cast<const PxU8*>(contactPoints), reinterpret_cast<const PxU32*>(forces + numContacts), numPatches, numContacts)
+, mAnchorIter(reinterpret_cast<const PxU8*>(contactPatches), reinterpret_cast<const PxU8*>(frictionPatches), numPatches)
 , mForces(forces)
 , mActor0(actor0->getPxActor())
 , mActor1(actor1->getPxActor())
@@ -63,15 +64,16 @@ Sc::ContactIterator::Pair* Sc::ContactIterator::getNextPair()
 		const PxReal* forces = NULL;
 		PxU32 numContacts = 0;
 		PxU32 numPatches = 0;
+		const void* frictionPatches = NULL;
 
-		PxU32 nextOffset = si->getContactPointData(contactPatches, contactPoints, contactDataSize, numContacts, numPatches, forces, mOffset, *mOutputs);
+		PxU32 nextOffset = si->getContactPointData(contactPatches, contactPoints, contactDataSize, numContacts, numPatches, forces, mOffset, *mOutputs, frictionPatches);
 
 		if (nextOffset == mOffset)
 			++mCurrent;
 		else
 			mOffset = nextOffset;
 
-		mCurrentPair = Pair(contactPatches, contactPoints, contactDataSize, forces, numContacts, numPatches, si->getShape0(), si->getShape1(), &si->getActorSim0(), &si->getActorSim1());
+		mCurrentPair = Pair(contactPatches, contactPoints, frictionPatches, contactDataSize, forces, numContacts, numPatches, si->getShape0(), si->getShape1(), &si->getActorSim0(), &si->getActorSim1());
 		return &mCurrentPair;
 	}
 	else
@@ -82,13 +84,12 @@ Sc::Contact* Sc::ContactIterator::Pair::getNextContact()
 {
 	if(mIndex < mNumContacts)
 	{
-		if(!mIter.hasNextContact())
+		while (!mIter.hasNextContact())
 		{
 			if(!mIter.hasNextPatch())
 				return NULL;
 			mIter.nextPatch();
 		}
-		PX_ASSERT(mIter.hasNextContact());
 		mIter.nextContact();
 
 		mCurrentContact.normal = mIter.getContactNormal();
@@ -100,6 +101,27 @@ Sc::Contact* Sc::ContactIterator::Pair::getNextContact()
 
 		mIndex++;
 		return &mCurrentContact;
+	}
+	return NULL;
+}
+
+Sc::FrictionAnchor* Sc::ContactIterator::Pair::getNextFrictionAnchor()
+{
+	if(mAnchorIter.hasNextPatch())
+	{
+		while (!mAnchorIter.hasNextFrictionAnchor())
+		{
+			if(!mAnchorIter.hasNextPatch())
+				return NULL;
+			mAnchorIter.nextPatch();
+		}
+		mAnchorIter.nextFrictionAnchor();
+
+		mCurrentAnchor.normal = mAnchorIter.getNormal();
+		mCurrentAnchor.point = mAnchorIter.getPosition();
+		mCurrentAnchor.impulse = mAnchorIter.getImpulse();
+
+		return &mCurrentAnchor;
 	}
 	return NULL;
 }

@@ -22,7 +22,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2023 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2025 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
@@ -30,16 +30,7 @@
 #define PX_PREPROCESSOR_H
 
 #include <stddef.h>
-#if !defined(PX_GENERATE_META_DATA)
-#include <ciso646>  
-#endif
-/** \addtogroup foundation
-  @{
-*/
 
-#ifndef PX_ENABLE_FEATURES_UNDER_CONSTRUCTION
-#define PX_ENABLE_FEATURES_UNDER_CONSTRUCTION 0
-#endif
 
 #define PX_STRINGIZE_HELPER(X) #X
 #define PX_STRINGIZE(X) PX_STRINGIZE_HELPER(X)
@@ -86,6 +77,13 @@ Compiler defines, see http://sourceforge.net/p/predef/wiki/Compilers/
 	#define PX_GCC 1
 #else
 	#error "Unknown compiler"
+#endif
+
+// not treated as its own compiler because clang, for example, can, in theory, compile CUDA code too
+#if defined(__CUDACC__)
+	#define PX_CUDA_COMPILER 1
+#else
+	#define PX_CUDA_COMPILER 0
 #endif
 
 /**
@@ -273,7 +271,7 @@ C++ standard library defines
 Assert macro
 */
 #ifndef PX_ENABLE_ASSERTS
-	#if PX_DEBUG && !defined(__CUDACC__)
+	#if PX_DEBUG && !PX_CUDA_COMPILER
 		#define PX_ENABLE_ASSERTS 1
 	#else
 		#define PX_ENABLE_ASSERTS 0
@@ -343,8 +341,8 @@ Force inline macro
 */
 #if PX_VC
 	#define PX_FORCE_INLINE __forceinline
-#elif PX_LINUX // Workaround; Fedora Core 3 do not agree with force inline and PxcPool
-	#define PX_FORCE_INLINE inline
+#elif PX_CUDA_COMPILER
+	#define PX_FORCE_INLINE __forceinline__
 #elif PX_GCC_FAMILY
 	#define PX_FORCE_INLINE inline __attribute__((always_inline))
 #else
@@ -365,7 +363,7 @@ Noinline macro
 /**
 Restrict macro
 */
-#if defined(__CUDACC__)
+#if PX_CUDA_COMPILER
 	#define PX_RESTRICT __restrict__
 #else
 	#define PX_RESTRICT __restrict
@@ -383,12 +381,20 @@ Noalias macro
 /**
 Override macro
 */
-#if PX_WINDOWS_FAMILY
-	#define PX_OVERRIDE	override
+#define PX_OVERRIDE override
+
+/**
+Final macro
+ */
+#define PX_FINAL final
+
+/**
+Unused attribute macro. Only on GCC for now.
+ */
+#if PX_GCC_FAMILY
+	#define PX_UNUSED_ATTRIBUTE __attribute__((unused))
 #else
-	// PT: we don't really need to support it on all platforms, as long as
-	// we compile the code on at least one platform that supports it.
-	#define PX_OVERRIDE
+	#define PX_UNUSED_ATTRIBUTE 
 #endif
 
 /**
@@ -410,7 +416,7 @@ This declaration style is parsed correctly by Visual Assist.
 		#define PX_ALIGN(alignment, decl) decl __attribute__((aligned(alignment)))
 		#define PX_ALIGN_PREFIX(alignment)
 		#define PX_ALIGN_SUFFIX(alignment) __attribute__((aligned(alignment)))
-	#elif defined __CUDACC__
+	#elif PX_CUDA_COMPILER
 		#define PX_ALIGN(alignment, decl) __align__(alignment) decl
 		#define PX_ALIGN_PREFIX(alignment)
 		#define PX_ALIGN_SUFFIX(alignment) __align__(alignment))
@@ -437,11 +443,15 @@ Use these macro definitions to create warnings for deprecated functions
 General defines
 */
 
-// static assert
-#if(defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7))) || (PX_APPLE_FAMILY) || (PX_SWITCH || PX_PS4 || PX_PS5) || (PX_CLANG && PX_ARM) || (PX_CLANG && PX_A64)
-	#define PX_COMPILE_TIME_ASSERT(exp) typedef char PX_CONCAT(PxCompileTimeAssert_Dummy, __COUNTER__)[(exp) ? 1 : -1] __attribute__((unused))
+
+#if PX_LINUX && PX_CLANG && !PX_CUDA_COMPILER
+#define PX_COMPILE_TIME_ASSERT(exp) \
+_Pragma(" clang diagnostic push") \
+_Pragma(" clang diagnostic ignored \"-Wc++98-compat\"") \
+static_assert(exp, "") \
+_Pragma(" clang diagnostic pop")
 #else
-	#define PX_COMPILE_TIME_ASSERT(exp) typedef char PxCompileTimeAssert_Dummy[(exp) ? 1 : -1]
+#define PX_COMPILE_TIME_ASSERT(exp) static_assert(exp, "")
 #endif
 
 #if PX_GCC_FAMILY
@@ -453,9 +463,12 @@ General defines
 #define PX_OFFSETOF_BASE 0x100 // casting the null ptr takes a special-case code path, which we don't want
 #define PX_OFFSET_OF_RT(Class, Member)	(reinterpret_cast<size_t>(&reinterpret_cast<Class*>(PX_OFFSETOF_BASE)->Member) - size_t(PX_OFFSETOF_BASE))
 
-// check that exactly one of NDEBUG and _DEBUG is defined
-#if !defined(NDEBUG) ^ defined(_DEBUG)
-	#undef _DEBUG
+
+#if PX_WINDOWS_FAMILY
+	// check that exactly one of NDEBUG and _DEBUG is defined
+	#if !defined(NDEBUG) ^ defined(_DEBUG)
+		#undef _DEBUG
+	#endif
 #endif
 
 // make sure PX_CHECKED is defined in all _DEBUG configurations as well
@@ -463,7 +476,7 @@ General defines
 	#error PX_CHECKED must be defined when PX_DEBUG is defined
 #endif
 
-#ifdef __CUDACC__
+#if PX_CUDA_COMPILER
 	#define PX_CUDA_CALLABLE __host__ __device__
 #else
 	#define PX_CUDA_CALLABLE
@@ -545,6 +558,5 @@ protected:                  \
 
 #define PX_FL	__FILE__, __LINE__
 
-/** @} */
 #endif
 

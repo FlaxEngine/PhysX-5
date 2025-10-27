@@ -195,7 +195,7 @@ class CMakePreset:
                 os.environ['PM_CMakeModules_PATH'] + '/ps5/PS5Toolchain.txt'
             outString = outString + ' -DCMAKE_GENERATOR_PLATFORM=PROSPERO'
             outString = outString + ' -DSUPPRESS_SUFFIX=ON'
-            outString = outString + ' -G \"Visual Studio 16 2019\"'
+            outString = outString + ' -G \"Visual Studio 17 2022\"'
             return outString
         elif self.targetPlatform == 'switch64':
             outString = outString + ' -DTARGET_BUILD_PLATFORM=switch'
@@ -204,7 +204,7 @@ class CMakePreset:
                 '/switch/NX64Toolchain.txt'
             outString = outString + ' -DCMAKE_GENERATOR_PLATFORM=NX64'
             outString = outString + ' -DSUPPRESS_SUFFIX=ON'
-            outString = outString + ' -G \"Visual Studio 16 2019\"'
+            outString = outString + ' -G \"Visual Studio 17 2022\"'
             return outString
         elif self.targetPlatform == 'android':
             outString = outString + ' -DTARGET_BUILD_PLATFORM=android'
@@ -235,7 +235,7 @@ class CMakePreset:
                         os.environ['PM_clang_PATH'] + '/bin/clang'
                     outString = outString + ' -DCMAKE_CXX_COMPILER=' + \
                         os.environ['PM_clang_PATH'] + '/bin/clang++'
-                else:
+                elif os.environ.get('CC') is None:
                     outString = outString + ' -DCMAKE_C_COMPILER=clang'
                     outString = outString + ' -DCMAKE_CXX_COMPILER=clang++'
             return outString

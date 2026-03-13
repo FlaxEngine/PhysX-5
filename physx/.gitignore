@@ -6,6 +6,7 @@ compiler/ios*
 compiler/mac*
 compiler/ps*
 compiler/switch*
+compiler/web*
 include/PxConfig.h
 install/
 .DS_Store

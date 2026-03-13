@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<preset name="web32" comment="Web 32-bit clang PhysX SDK general settings">
+  <platform targetPlatform="web32" compiler="clang" />
+  <CMakeSwitches>
+    <cmakeSwitch name="PX_BUILDSNIPPETS" value="False" comment="Generate the snippets" />
+    <cmakeSwitch name="PX_BUILDPUBLICSAMPLES" value="False" comment="Generate the samples" />
+    <cmakeSwitch name="PX_GENERATE_STATIC_LIBRARIES" value="True" comment="Generate static libs" />
+    <cmakeSwitch name="PX_BUILDPVDRUNTIME" value="False" />
+    <cmakeSwitch name="PX_BUILDSAMPLES" value="False" />
+    <cmakeSwitch name="NV_USE_STATIC_WINCRT" value="False" />
+    <cmakeSwitch name="NV_USE_DEBUG_WINCRT" value="False" />
+    <cmakeSwitch name="PX_FLOAT_POINT_PRECISE_MATH" value="False" />
+  </CMakeSwitches>
+  <CMakeParams>
+    <cmakeParam name="CMAKE_INSTALL_PREFIX" value="install/web32/PhysX" comment="Install path relative to PhysX SDK root" />
+  </CMakeParams>
+</preset>

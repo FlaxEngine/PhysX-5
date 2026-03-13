@@ -20,7 +20,7 @@ def cmakeExt():
 
 
 def filterPreset(presetName):
-    winPresetFilter = ['win','ps4','ps5','switch','xboxone','android','crosscompile']
+    winPresetFilter = ['win','ps4','ps5','switch','xboxone','android','web32','crosscompile']
     if sys.platform == 'win32':
         if any(presetName.find(elem) != -1 for elem in winPresetFilter):
             return True
@@ -266,6 +266,11 @@ class CMakePreset:
             outString = outString + ' -DCMAKE_OSX_ARCHITECTURES=arm64'
             outString = outString + ' -DCMAKE_OSX_SYSROOT=iphoneos'
             outString = outString + ' -DPX_OUTPUT_ARCH=arm'
+            return outString
+        elif self.targetPlatform == 'web32':
+            outString = outString + ' -DTARGET_BUILD_PLATFORM=web'
+            outString = outString + ' -DPX_OUTPUT_ARCH=x86'
+            outString = outString + ' -G \"Ninja"'
             return outString
         return ''
 

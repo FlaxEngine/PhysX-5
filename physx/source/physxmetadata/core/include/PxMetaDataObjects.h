@@ -480,9 +480,12 @@ struct PxClassInfoTraits
 	static bool getInfo()  { return false;}	
 };
 
+#if PX_EMSCRIPTEN
+#define _Bool bool
+#else
 //move the bool typedef to the global namespace.
 typedef bool _Bool;
-
+#endif
 
 template<PxU32 TPropertyName>
 struct PxPropertyToValueStructMemberMap

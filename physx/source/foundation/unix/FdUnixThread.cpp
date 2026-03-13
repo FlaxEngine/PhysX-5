@@ -54,6 +54,11 @@
 #include <pthread.h>
 #endif
 
+#if PX_EMSCRIPTEN
+#include <emscripten/emscripten.h>
+#include <emscripten/threading.h>
+#endif
+
 // fwd
 #if PX_ANDROID
 extern "C" {
@@ -297,7 +302,9 @@ void PxThreadImpl::yield()
 
 void PxThreadImpl::yieldProcessor()
 {
-#if (PX_ARM || PX_A64)
+#if PX_EMSCRIPTEN
+    emscripten_thread_sleep(0);
+#elif (PX_ARM || PX_A64)
 	__asm__ __volatile__("yield");
 #else
 	__asm__ __volatile__("pause");
@@ -356,7 +363,7 @@ void PxThreadImpl::setName(const char* name)
 	}
 }
 
-#if !PX_APPLE_FAMILY
+#if !PX_APPLE_FAMILY && !PX_EMSCRIPTEN
 static PxThreadPriority::Enum convertPriorityFromLinux(uint32_t inPrio, int policy)
 {
 	PX_COMPILE_TIME_ASSERT(PxThreadPriority::eLOW > PxThreadPriority::eHIGH);
@@ -396,7 +403,7 @@ static int convertPriorityToLinux(PxThreadPriority::Enum inPrio, int policy)
 void PxThreadImpl::setPriority(PxThreadPriority::Enum val)
 {
 	PX_UNUSED(val);
-#if !PX_APPLE_FAMILY
+#if !PX_APPLE_FAMILY && !PX_EMSCRIPTEN
 	int policy;
 	sched_param s_param;
 	pthread_getschedparam(getThread(this)->thread, &policy, &s_param);
@@ -408,7 +415,7 @@ void PxThreadImpl::setPriority(PxThreadPriority::Enum val)
 PxThreadPriority::Enum PxThreadImpl::getPriority(Id pthread)
 {
 	PX_UNUSED(pthread);
-#if !PX_APPLE_FAMILY
+#if !PX_APPLE_FAMILY && !PX_EMSCRIPTEN
 	int policy;
 	sched_param s_param;
 	int ret = pthread_getschedparam(pthread_t(pthread), &policy, &s_param);
@@ -427,6 +434,8 @@ uint32_t PxThreadImpl::getNbPhysicalCores()
 	int count;
 	size_t size = sizeof(count);
 	return sysctlbyname("hw.physicalcpu", &count, &size, NULL, 0) ? 0 : count;
+#elif PX_EMSCRIPTEN
+	return emscripten_has_threading_support() ? emscripten_num_logical_cores() : 1;
 #elif PX_ANDROID
 	return android_getCpuCount();
 #else

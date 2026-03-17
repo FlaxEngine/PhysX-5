@@ -30,6 +30,10 @@
 #ifndef EXT_SERIALIZATION_H
 #define EXT_SERIALIZATION_H
 
+#include "foundation/PxPreprocessor.h"
+
+#if PX_SERIALIZATION
+
 namespace physx
 {
 namespace Ext
@@ -39,5 +43,7 @@ namespace Ext
 	void GetExtensionsBinaryMetaData(PxOutputStream& stream);
 }
 }
+
+#endif
 
 #endif

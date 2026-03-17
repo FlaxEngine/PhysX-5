@@ -28,9 +28,11 @@
 
 #include "foundation/PxIO.h"
 #include "common/PxMetaData.h"
-#include "common/PxSerializer.h"
 #include "extensions/PxExtensionsAPI.h"
+#if PX_SERIALIZATION
+#include "common/PxSerializer.h"
 #include "extensions/PxRepXSerializer.h"
+#endif
 
 #include "ExtDistanceJoint.h"
 #include "ExtD6Joint.h"
@@ -38,10 +40,12 @@
 #include "ExtPrismaticJoint.h"
 #include "ExtRevoluteJoint.h"
 #include "ExtSphericalJoint.h"
+#if PX_SERIALIZATION
 #include "ExtSerialization.h"
 #include "SnRepXCoreSerializer.h"
 #include "SnJointRepXSerializer.h"
 #include "PxExtensionMetaDataObjects.h"
+#endif
 
 #if PX_SUPPORT_PVD
 #include "ExtPvd.h"
@@ -195,6 +199,8 @@ void PxCloseExtensions(void)
 #endif
 }
 
+#if PX_SERIALIZATION
+
 void Ext::RegisterExtensionsSerializers(PxSerializationRegistry& sr)
 {
 	//for repx serialization
@@ -253,3 +259,5 @@ void Ext::UnregisterExtensionsSerializers(PxSerializationRegistry& sr)
 	PX_DELETE_REPX_SERIALIZER(sr.unregisterRepXSerializer(PxJointConcreteType::eREVOLUTE));
 	PX_DELETE_REPX_SERIALIZER(sr.unregisterRepXSerializer(PxJointConcreteType::eSPHERICAL));
 }
+
+#endif

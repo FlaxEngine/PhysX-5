@@ -36,17 +36,38 @@
 #include "PxPhysics.h"
 
 #include "foundation/PxUtilities.h"
+#if PX_SERIALIZATION
 #include "PxVehicleMetaDataObjects.h"
 #include "PxVehicleSerialization.h"
 #include "SnRepXSerializerImpl.h"
+#endif
 
 namespace physx
 {
 
 void setVehicleToleranceScale(const PxTolerancesScale& ts);
 void resetVehicleToleranceScale();
+#if PX_SERIALIZATION
 void setSerializationRegistryPtr(const PxSerializationRegistry* sr);
 const PxSerializationRegistry* resetSerializationRegistryPtr();
+#else
+	PxVehicleNoDrive::PxVehicleNoDrive()
+	: PxVehicleWheels(PxVehicleConcreteType::eVehicleNoDrive, PxBaseFlag::eOWNS_MEMORY | PxBaseFlag::eIS_RELEASABLE)
+	{}
+
+	PxVehicleDrive4W::PxVehicleDrive4W()
+	: PxVehicleDrive(PxVehicleConcreteType::eVehicleDrive4W, PxBaseFlag::eOWNS_MEMORY | PxBaseFlag::eIS_RELEASABLE)
+	{}
+
+	PxVehicleDriveNW::PxVehicleDriveNW()
+	: PxVehicleDrive(PxVehicleConcreteType::eVehicleDriveNW, PxBaseFlag::eOWNS_MEMORY | PxBaseFlag::eIS_RELEASABLE)
+	{}
+
+	PxVehicleDriveTank::PxVehicleDriveTank()
+	: PxVehicleDrive(PxVehicleConcreteType::eVehicleDriveTank, PxBaseFlag::eOWNS_MEMORY | PxBaseFlag::eIS_RELEASABLE)
+	, mDriveModel(PxVehicleDriveTankControlModel::eSTANDARD)
+	{}
+#endif
 void setVehicleDefaults();
 
 bool PxInitVehicleSDK(PxPhysics& physics, PxSerializationRegistry* sr)
@@ -57,6 +78,7 @@ bool PxInitVehicleSDK(PxPhysics& physics, PxSerializationRegistry* sr)
 
 	setVehicleDefaults();
 
+#if PX_SERIALIZATION
 	setSerializationRegistryPtr(sr);
 	if(sr)
 	{
@@ -75,6 +97,7 @@ bool PxInitVehicleSDK(PxPhysics& physics, PxSerializationRegistry* sr)
 		sr->registerBinaryMetaDataCallback(PxVehicleNoDrive::getBinaryMetaData);
 		sr->registerBinaryMetaDataCallback(PxVehicleDriveNW::getBinaryMetaData);
 	}
+#endif
 	return true;
 }
 
@@ -85,6 +108,7 @@ void PxCloseVehicleSDK(PxSerializationRegistry* sr)
 
 	setVehicleDefaults();
 
+#if PX_SERIALIZATION
 	if (sr != resetSerializationRegistryPtr())
 	{
 		PxGetFoundation().error(PxErrorCode::eINVALID_PARAMETER, __FILE__, __LINE__, "PxCloseVehicleSDK called with different PxSerializationRegistry instance than PxInitVehicleSDK.");
@@ -103,6 +127,7 @@ void PxCloseVehicleSDK(PxSerializationRegistry* sr)
 		PX_DELETE_REPX_SERIALIZER(sr->unregisterRepXSerializer(PxVehicleConcreteType::eVehicleNoDrive));
 		PX_DELETE_REPX_SERIALIZER(sr->unregisterRepXSerializer(PxVehicleConcreteType::eVehicleDriveNW));
 	}
+#endif
 }
 /////////////////////////
 

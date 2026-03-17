@@ -33,6 +33,8 @@ CMAKE_POLICY(SET CMP0057 NEW) # Enable IN_LIST
 OPTION(PX_SCALAR_MATH "Disable SIMD math" OFF)
 OPTION(PX_GENERATE_STATIC_LIBRARIES "Generate static libraries" OFF)
 OPTION(PX_EXPORT_LOWLEVEL_PDB "Export low level pdb's" OFF)
+OPTION(PX_SERIALIZATION "Toggles serialization" OFF)
+OPTION(PX_SOFT_BODY "Toggles soft body (tetrahedral mesh) simulation" OFF)
 
 IF(NOT DEFINED PHYSX_ROOT_DIR)
 	

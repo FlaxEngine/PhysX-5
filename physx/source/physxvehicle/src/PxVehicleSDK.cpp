@@ -97,6 +97,8 @@ bool PxInitVehicleSDK(PxPhysics& physics, PxSerializationRegistry* sr)
 		sr->registerBinaryMetaDataCallback(PxVehicleNoDrive::getBinaryMetaData);
 		sr->registerBinaryMetaDataCallback(PxVehicleDriveNW::getBinaryMetaData);
 	}
+#else
+	(void)sr;
 #endif
 	return true;
 }
@@ -127,6 +129,8 @@ void PxCloseVehicleSDK(PxSerializationRegistry* sr)
 		PX_DELETE_REPX_SERIALIZER(sr->unregisterRepXSerializer(PxVehicleConcreteType::eVehicleNoDrive));
 		PX_DELETE_REPX_SERIALIZER(sr->unregisterRepXSerializer(PxVehicleConcreteType::eVehicleDriveNW));
 	}
+#else
+	(void)sr;
 #endif
 }
 /////////////////////////

@@ -33,6 +33,7 @@
 // The source code for the generate was at one time checked into:
 // physx/PhysXMetaDataGenerator/llvm/tools/clang/lib/Frontend/PhysXMetaDataAction.cpp
 #define THERE_IS_NO_INCLUDE_GUARD_HERE_FOR_A_REASON
+#if PX_SERIALIZATION
 
 #define PX_PROPERTY_INFO_NAME PxPropertyInfoName
 	static PxU32ToName g_physx__PxShapeFlag__EnumConversion[] = {
@@ -3887,3 +3888,4 @@ template<> struct PxEnumTraits< physx::PxSimulationStatistics::RbPairStatsType >
 
 #undef THERE_IS_NO_INCLUDE_GUARD_HERE_FOR_A_REASON
 #undef PX_PROPERTY_INFO_NAME
+#endif

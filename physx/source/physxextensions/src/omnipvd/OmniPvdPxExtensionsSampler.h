@@ -26,7 +26,7 @@
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#ifndef OMNI_PVD_EXTENSION_SAMPLER_H
+#if !defined(OMNI_PVD_EXTENSION_SAMPLER_H) && PX_SERIALIZATION
 #define OMNI_PVD_EXTENSION_SAMPLER_H
 
 /*

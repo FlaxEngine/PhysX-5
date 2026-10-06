@@ -162,6 +162,8 @@ class CMakePreset:
             outString = outString + '-G \"Visual Studio 16 2019\"'
         elif self.compiler == 'vc17':
             outString = outString + '-G \"Visual Studio 17 2022\"'
+        elif self.compiler == 'vc18':
+            outString = outString + '-G \"Visual Studio 18 2026\"'
         elif self.compiler == 'xcode':
             outString = outString + '-G Xcode'
         elif self.targetPlatform == 'android':
@@ -199,12 +201,11 @@ class CMakePreset:
             return outString
         elif self.targetPlatform == 'switch64':
             outString = outString + ' -DTARGET_BUILD_PLATFORM=switch'
-            outString = outString + ' -DCMAKE_TOOLCHAIN_FILE=' + \
-                os.environ['PM_CMakeModules_PATH'] + \
-                '/switch/NX64Toolchain.txt'
-            outString = outString + ' -DCMAKE_GENERATOR_PLATFORM=NX64'
+            #outString = outString + ' -DCMAKE_GENERATOR_PLATFORM=NX64'
+            outString = outString + ' -DCMAKE_TOOLCHAIN_FILE=' + os.environ['PM_CMakeModules_PATH'] + '/switch/NX64Toolchain.txt'
             outString = outString + ' -DSUPPRESS_SUFFIX=ON'
-            outString = outString + ' -G \"Visual Studio 17 2022\"'
+            #outString = outString + ' -G \"Visual Studio 18 2026\"'
+            outString = outString + ' -G \"NMake Makefiles\"'
             return outString
         elif self.targetPlatform == 'android':
             outString = outString + ' -DTARGET_BUILD_PLATFORM=android'
